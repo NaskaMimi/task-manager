@@ -7,7 +7,6 @@ import javafx.application.Application;
 import javafx.collections.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 
@@ -105,10 +104,11 @@ public class Main extends Application
         {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/view/notification.fxml"));
-            AnchorPane page = loader.load();
+            Pane page = loader.load();
 
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Уведомление");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
@@ -116,7 +116,8 @@ public class Main extends Application
             NotificationController controller = loader.getController();
             controller.setMain(this);
             controller.setDialogStage(dialogStage);
-            controller.setNotification();
+            controller.createTimerForNotifications();
+
         }
         catch (IOException e)
         {

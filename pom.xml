@@ -8,6 +8,18 @@
     <artifactId>taskManager</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <name>Information System</name>
+
+    <properties>
+        <jdk-version>1.8</jdk-version>
+
+        <fx-guice-version>1.1.0</fx-guice-version>
+        <guice-version>4.1.0</guice-version>
+
+        <java-fx-plugin-version>2.0</java-fx-plugin-version>
+        <maven-compiler-plugin-version>3.7.0</maven-compiler-plugin-version>
+    </properties>
+
     <build>
         <plugins>
 
@@ -69,6 +81,15 @@
     </build>
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.cathive.fx</groupId>
+            <artifactId>fx-guice</artifactId>
+            <version>${fx-guice-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${guice-version}</version>
+        </dependency>
     </dependencies>
 </project>

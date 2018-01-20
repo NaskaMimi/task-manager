@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
  * Контроллер для макета notification.fxml
  */
 
-public class NotificationController
+public class NotificationController implements Controller
 {
 
     @FXML
@@ -37,6 +37,12 @@ public class NotificationController
         this.notificationDialogStage = dialogStage;
     }
 
+    @Override
+    public Stage getStage()
+    {
+        return notificationDialogStage;
+    }
+
     @FXML
     private void initialize()
     {
@@ -47,6 +53,35 @@ public class NotificationController
         // Делаем таску выделенной по клику
         taskTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> selectTask(newValue));
+    }
+
+    @FXML
+    private void okButton()
+    {
+        if (selectedTask != null)
+        {
+            selectedTask.setRead(true);
+            notificationDialogStage.close();
+        }
+        else
+        {
+            TaskManagerWarning.taskNotChosenWarning();
+        }
+    }
+
+    @FXML
+    private void delayButton()
+    {
+        if (selectedTask != null)
+        {
+            selectedTask.setTime(selectedTask.toLocalDateTime().plusMinutes(3).
+                    format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            notificationDialogStage.close();
+        }
+        else
+        {
+            TaskManagerWarning.taskNotChosenWarning();
+        }
     }
 
     public void createTimerForNotifications()
@@ -88,34 +123,5 @@ public class NotificationController
             }
         });
         return taskList;
-    }
-
-    @FXML
-    private void okButton()
-    {
-        if (selectedTask != null)
-        {
-            selectedTask.setRead(true);
-            notificationDialogStage.close();
-        }
-        else
-        {
-            TaskManagerWarning.taskNotChosenWarning();
-        }
-    }
-
-    @FXML
-    private void delayButton()
-    {
-        if (selectedTask != null)
-        {
-            selectedTask.setTime(selectedTask.toLocalDateTime().plusMinutes(3).
-                    format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-            notificationDialogStage.close();
-        }
-        else
-        {
-            TaskManagerWarning.taskNotChosenWarning();
-        }
     }
 }

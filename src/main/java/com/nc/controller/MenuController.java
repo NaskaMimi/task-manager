@@ -5,11 +5,12 @@ import com.nc.exception.TaskManagerWarning;
 import com.nc.model.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 /**
  * Контроллер для макета menu.fxml
  */
-public class MenuController
+public class MenuController implements Controller
 {
     @FXML
     private TableView<Task> taskTable;
@@ -25,6 +26,21 @@ public class MenuController
     private Label textLabel;
 
     private Main main;
+    private Stage stage;
+
+    public void setParameters(Main main, Stage stage)
+    {
+        this.main = main;
+        this.stage = stage;
+        // Добавление в таблицу данных из списка
+        taskTable.setItems(main.getTaskData());
+    }
+
+    @Override
+    public Stage getStage()
+    {
+        return stage;
+    }
 
     /**
      * Инициализация класса-контроллера.
@@ -82,13 +98,6 @@ public class MenuController
         {
             main.getTaskData().add(temp);
         }
-    }
-
-    public void setMain(Main main)
-    {
-        this.main = main;
-        // Добавление в таблицу данных из списка
-        taskTable.setItems(main.getTaskData());
     }
 
     /**

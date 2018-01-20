@@ -1,11 +1,13 @@
 package com.nc.utils;
 
 import com.nc.*;
+import com.nc.controller.*;
 import com.nc.exception.TaskManagerException;
 import com.nc.model.*;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.Pane;
+import javafx.scene.Scene;
+import javafx.scene.layout.*;
 import javafx.stage.*;
 
 import javax.xml.bind.*;
@@ -14,37 +16,41 @@ import java.util.prefs.Preferences;
 
 public class Utils
 {
-    /**
-     * Выгружает в память путь последнего загруженного файла
-     * Путь хранится в реестре
-     */
-    public static File getTaskFilePath()
+    public static BorderPane createMainWindow(FXMLLoader loader, String filePath, Stage primaryStage, Main main)
     {
-        Preferences prefs = Preferences.userNodeForPackage(Main.class);
-        String filePath = prefs.get("filePath", null);
-        if (filePath != null)
+        //TODO Строгий каст - нехорошо, но пока не знаю, как по-другому это сделать
+        BorderPane pane = (BorderPane)createPaneFromFXML(loader, filePath);
+        RootLayoutController controller = loader.getController();
+        controller.setParameters(main, null);
+        if (pane != null)
         {
-            return new File(filePath);
+            primaryStage.setScene(new Scene(pane));
         }
-        else
-        {
-            return null;
-        }
+        primaryStage.show();
+        return pane;
     }
 
-    /**
-     * Задаёт путь текущему загруженному файлу
-     * Путь сохраняется в реестре
-     */
-    private static void setTaskFilePath(File file, Stage primaryStage)
+    public static void createPaneInMainWindow(FXMLLoader loader, String filePath, BorderPane rootLayout, Main main)
     {
-        Preferences prefs = Preferences.userNodeForPackage(Main.class);
-        prefs.put("filePath", file.getPath());
+        Pane taskOverview = createPaneFromFXML(loader, filePath);
 
-        primaryStage.setTitle(Constants.TASK_MANAGER + " - " + file.getName());
+        rootLayout.setCenter(taskOverview);
+
+        Controller controller = loader.getController();
+        controller.setParameters(main, null);
     }
 
-    public static Pane createPaneFromFXML(FXMLLoader loader, String filePath)
+    public static Controller createSeparateWindow(FXMLLoader loader, String filePath, String title, Stage owner, Main main)
+    {
+        Pane pane = createPaneFromFXML(loader, filePath);
+        Stage dialogStage = createModalWindow(title, pane, owner);
+        Controller controller = loader.getController();
+        controller.setParameters(main, dialogStage);
+
+        return controller;
+    }
+
+    private static Pane createPaneFromFXML(FXMLLoader loader, String filePath)
     {
         loader.setLocation(Main.class.getResource(filePath));
         try
@@ -104,6 +110,46 @@ public class Utils
         }
     }
 
+    private static Stage createModalWindow(String title, Pane pane, Stage owner)
+    {
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle(title);
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.initOwner(owner);
+        dialogStage.setScene(new Scene(pane));
+        return dialogStage;
+    }
+
+    /**
+     * Задаёт путь текущему загруженному файлу
+     * Путь сохраняется в реестре
+     */
+    private static void setTaskFilePath(File file, Stage primaryStage)
+    {
+        Preferences prefs = Preferences.userNodeForPackage(Main.class);
+        prefs.put("filePath", file.getPath());
+
+        primaryStage.setTitle(Constants.TASK_MANAGER + " - " + file.getName());
+    }
+
+    /**
+     * Выгружает в память путь последнего загруженного файла
+     * Путь хранится в реестре
+     */
+    private static File getTaskFilePath()
+    {
+        Preferences prefs = Preferences.userNodeForPackage(Main.class);
+        String filePath = prefs.get("filePath", null);
+        if (filePath != null)
+        {
+            return new File(filePath);
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     private static void saveTaskDataToFile(File file, ObservableList<Task> taskData, Stage primaryStage)
     {
         try
@@ -156,10 +202,10 @@ public class Utils
 
     private static File correctFileExtensionIfNeed(File file)
     {
-        if (!file.getPath().endsWith(".xml")) {
+        if (!file.getPath().endsWith(".xml"))
+        {
             file = new File(file.getPath() + ".xml");
         }
         return file;
     }
-
 }

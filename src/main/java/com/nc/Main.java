@@ -6,15 +6,18 @@ import com.nc.utils.Utils;
 import javafx.application.Application;
 import javafx.collections.*;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.layout.*;
-import javafx.stage.*;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
 public class Main extends Application
 {
-    private Stage primaryStage;
+    private static final String VIEW_TASK_EDIT_DIALOG_FXML = "/view/taskEditDialog.fxml";
+    private static final String VIEW_NOTIFICATION_FXML = "/view/notification.fxml";
+    private static final String VIEW_MENU_FXML = "/view/menu.fxml";
+    private static final String VIEW_ROOT_LAYOUT_FXML = "/view/RootLayout.fxml";
+
     private BorderPane rootLayout;
-    private Stage taskEditDialogStage;
+    private Stage primaryStage;
     private TaskEditDialogController taskEditDialogController;
     private ObservableList<Task> taskData = FXCollections.observableArrayList();
 
@@ -43,7 +46,7 @@ public class Main extends Application
     public boolean isTaskEditionDialogShowing(Task task)
     {
         taskEditDialogController.setParameters(task);
-        taskEditDialogStage.showAndWait();
+        taskEditDialogController.getStage().showAndWait();
         return taskEditDialogController.isOkClicked();
     }
 
@@ -63,31 +66,14 @@ public class Main extends Application
     private void initRootLayout()
     {
         FXMLLoader loader = new FXMLLoader();
-        //TODO Строгий каст - нехорошо, но пока не знаю, как по-другому это сделать
-        rootLayout = (BorderPane)Utils.createPaneFromFXML(loader, "/view/RootLayout.fxml");
-
-        if (rootLayout != null)
-        {
-            RootLayoutController controller = loader.getController();
-            controller.setMain(this);
-
-            primaryStage.setScene(new Scene(rootLayout));
-            primaryStage.show();
-
-            // Загрузка последнего открытого файла из реестра
-            Utils.loadLastOpenedFileFromRegistry(taskData, primaryStage);
-        }
+        rootLayout = Utils.createMainWindow(loader, VIEW_ROOT_LAYOUT_FXML, primaryStage, this);
+        Utils.loadLastOpenedFileFromRegistry(taskData, primaryStage);
     }
 
     private void createMenu()
     {
         FXMLLoader loader = new FXMLLoader();
-        Pane taskOverview = Utils.createPaneFromFXML(loader, "/view/menu.fxml");
-
-        rootLayout.setCenter(taskOverview);
-
-        MenuController controller = loader.getController();
-        controller.setMain(this);
+        Utils.createPaneInMainWindow(loader, VIEW_MENU_FXML, rootLayout, this);
     }
 
     /**
@@ -95,35 +81,26 @@ public class Main extends Application
      */
     private void createNotificationWindow()
     {
-        FXMLLoader loader = new FXMLLoader();
-        Pane pane = Utils.createPaneFromFXML(loader, "/view/notification.fxml");
-        Stage dialogStage = createModalWindow(Constants.NOTIFICATION, pane);
-
-        NotificationController controller = loader.getController();
-        controller.setParameters(this, dialogStage);
+        NotificationController controller = (NotificationController)Utils.
+                createSeparateWindow(
+                        new FXMLLoader(),
+                        VIEW_NOTIFICATION_FXML,
+                        Constants.NOTIFICATION,
+                        primaryStage,
+                        this
+                );
         controller.createTimerForNotifications();
     }
 
     private void createTaskEditingWindow()
     {
-        FXMLLoader loader = new FXMLLoader();
-        Pane pane = Utils.createPaneFromFXML(loader, "/view/taskEditDialog.fxml");
-        Stage dialogStage = createModalWindow(Constants.TASK_EDITION, pane);
-
-        TaskEditDialogController controller = loader.getController();
-        controller.setStage(dialogStage);
-
-        taskEditDialogStage = dialogStage;
-        taskEditDialogController = controller;
-    }
-
-    private Stage createModalWindow(String title, Pane pane)
-    {
-        Stage dialogStage = new Stage();
-        dialogStage.setTitle(title);
-        dialogStage.initModality(Modality.WINDOW_MODAL);
-        dialogStage.initOwner(primaryStage);
-        dialogStage.setScene(new Scene(pane));
-        return dialogStage;
+        taskEditDialogController = (TaskEditDialogController)Utils.
+                createSeparateWindow(
+                        new FXMLLoader(),
+                        VIEW_TASK_EDIT_DIALOG_FXML,
+                        Constants.TASK_EDITION,
+                        primaryStage,
+                        this
+                );
     }
 }

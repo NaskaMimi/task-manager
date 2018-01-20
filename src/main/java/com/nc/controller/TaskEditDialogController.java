@@ -1,6 +1,6 @@
 package com.nc.controller;
 
-import com.nc.Constants;
+import com.nc.*;
 import com.nc.exception.TaskManagerWarning;
 import com.nc.model.Task;
 import javafx.fxml.FXML;
@@ -12,7 +12,7 @@ import java.time.format.DateTimeParseException;
 /**
  * Контроллер для макета taskEditDialog.fxml
  */
-public class TaskEditDialogController
+public class TaskEditDialogController implements Controller
 {
     @FXML
     private TextField titleField;
@@ -34,9 +34,15 @@ public class TaskEditDialogController
     /**
      * Устанавливает сцену для этого окна и инициализирует поля данными таска для их замены
      */
-    public void setStage(Stage dialogStage)
+    public void setParameters(Main main, Stage stage)
     {
-        this.dialogStage = dialogStage;
+        this.dialogStage = stage;
+    }
+
+    @Override
+    public Stage getStage()
+    {
+        return dialogStage;
     }
 
     /**

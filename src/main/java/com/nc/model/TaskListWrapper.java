@@ -9,7 +9,6 @@ import java.util.List;
  * Вспомогательный класс, используется для сохранения списка в xml файл.
  */
 @XmlRootElement(name = "tasks")
-//@XmlSeeAlso({Task.class})
 public class TaskListWrapper {
     private List <Task> tasks;
 

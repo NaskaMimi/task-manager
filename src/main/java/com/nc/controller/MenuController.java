@@ -3,17 +3,14 @@ package com.nc.controller;
 import com.nc.Main;
 import com.nc.exception.TaskManagerWarning;
 import com.nc.model.Task;
-
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 
 /**
  * Контроллер для макета menu.fxml
  */
-public class MenuController {
+public class MenuController
+{
     @FXML
     private TableView<Task> taskTable;
     @FXML
@@ -30,14 +27,16 @@ public class MenuController {
 
     private Main main;
 
-    public MenuController() {
+    public MenuController()
+    {
     }
 
     /**
      * Инициализация класса-контроллера.
      */
     @FXML
-    private void initialize() {
+    private void initialize()
+    {
         // Инициализация таблицы с двумя столбцами
         titleColumn.setCellValueFactory(cellData -> cellData.getValue().getTitleProperty());
         timeColumn.setCellValueFactory(cellData -> cellData.getValue().getTimeProperty());
@@ -49,7 +48,8 @@ public class MenuController {
                 (observable, oldValue, newValue) -> showTaskDetails(newValue));
     }
 
-    public void setMain(Main main) {
+    public void setMain(Main main)
+    {
         this.main = main;
 
         // Добавление в таблицу данных из списка
@@ -58,15 +58,17 @@ public class MenuController {
 
     /**
      * Инициализация полей выделенным таском
-     *
-     * @param task
      */
-    private void showTaskDetails(Task task) {
-        if (task != null) {
+    private void showTaskDetails(Task task)
+    {
+        if (task != null)
+        {
             titleLabel.setText(task.getTitle());
             timeLabel.setText(task.getTime());
             textLabel.setText(task.getText());
-        } else {
+        }
+        else
+        {
             titleLabel.setText("");
             timeLabel.setText("");
             textLabel.setText("");
@@ -74,45 +76,45 @@ public class MenuController {
     }
 
     @FXML
-    private void deleteButton() {
+    private void deleteButton()
+    {
         int selectedIndex = taskTable.getSelectionModel().getSelectedIndex();
-        if (selectedIndex >= 0) {
+        if (selectedIndex >= 0)
+        {
             taskTable.getItems().remove(selectedIndex);
-            main.showNotification();
-        } else {
-            TaskManagerWarning.createWarning(
-                    "Предупреждение",
-                    "Не выбрана задача!",
-                    "Пожалуйста, выберите задачу из списка"
-            );
+        }
+        else
+        {
+            TaskManagerWarning.taskNotChosenWarning();
         }
     }
 
     @FXML
-    private void editButton() {
+    private void editButton()
+    {
         Task selectedTask = taskTable.getSelectionModel().getSelectedItem();
-        if (selectedTask != null) {
+        if (selectedTask != null)
+        {
             boolean okClicked = main.showTaskEditDialog(selectedTask);
-            if (okClicked) {
+            if (okClicked)
+            {
                 showTaskDetails(selectedTask);
-                main.showNotification();
             }
-        } else {
-            TaskManagerWarning.createWarning(
-                    "Выбор пуст",
-                    "Не выбрана задача!",
-                    "Пожалуйста, выберите задачу из списка"
-            );
+        }
+        else
+        {
+            TaskManagerWarning.taskNotChosenWarning();
         }
     }
 
     @FXML
-    private void newButton() {
+    private void newButton()
+    {
         Task temp = new Task();
         boolean okClicked = main.showTaskEditDialog(temp);
-        if (okClicked) {
+        if (okClicked)
+        {
             main.getTaskData().add(temp);
-            main.showNotification();
         }
     }
 }

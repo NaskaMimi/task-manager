@@ -35,7 +35,7 @@ public class Main extends Application
     public void start(Stage primaryStage)
     {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Менеджер задач");
+        this.primaryStage.setTitle(Constants.TASK_MANAGER);
 
         initRootLayout();
 
@@ -47,7 +47,7 @@ public class Main extends Application
     /**
      * Основная область
      */
-    public void initRootLayout()
+    private void initRootLayout()
     {
         try
         {
@@ -76,7 +76,7 @@ public class Main extends Application
         }
     }
 
-    public void showMenu()
+    private void showMenu()
     {
         try
         {
@@ -107,7 +107,7 @@ public class Main extends Application
             Pane page = loader.load();
 
             Stage dialogStage = new Stage();
-            dialogStage.setTitle("Уведомление");
+            dialogStage.setTitle(Constants.NOTIFICATION);
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
             Scene scene = new Scene(page);
@@ -132,9 +132,6 @@ public class Main extends Application
 
     /**
      * Всплывающее окно редактирования
-     *
-     * @param task - выделенная задача в списке (или новая)
-     * @return
      */
     public boolean showTaskEditDialog(Task task)
     {
@@ -145,7 +142,7 @@ public class Main extends Application
             AnchorPane page = loader.load();
 
             Stage dialogStage = new Stage();
-            dialogStage.setTitle("Редактирование задачи");
+            dialogStage.setTitle(Constants.TASK_EDITION);
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
             Scene scene = new Scene(page);
@@ -168,8 +165,6 @@ public class Main extends Application
     /**
      * Выгружает в память путь последнего загруженного файла
      * Путь хранится в реестре
-     *
-     * @return
      */
     public File getTaskFilePath()
     {
@@ -188,15 +183,13 @@ public class Main extends Application
     /**
      * Задаёт путь текущему загруженному файлу
      * Путь сохраняется в реестре
-     *
-     * @param file
      */
-    public void setTaskFilePath(File file)
+    private void setTaskFilePath(File file)
     {
         Preferences prefs = Preferences.userNodeForPackage(getClass());
         prefs.put("filePath", file.getPath());
 
-        primaryStage.setTitle("Менеджер задач - " + file.getName());
+        primaryStage.setTitle(Constants.TASK_MANAGER+ " - " + file.getName());
     }
 
     public void loadTaskDataFromFile(File file)
@@ -215,11 +208,7 @@ public class Main extends Application
         }
         catch (Exception e)
         {
-            TaskManagerException.createException(
-                    "Ошибка",
-                    "Не удалось загрузить данные",
-                    "Не удалось загрузить данные из \n" + file.getPath(),
-                    e);
+            TaskManagerException.createLoadingException(file.getPath(), e);
         }
     }
 
@@ -240,11 +229,7 @@ public class Main extends Application
         }
         catch (Exception e)
         {
-            TaskManagerException.createException(
-                    "Ошибка",
-                    "Не удалось сохранить данные",
-                    "Не удалось сохранить данные в \n" + file.getPath(),
-                    e);
+            TaskManagerException.createSavingException(file.getPath(), e);
         }
     }
 

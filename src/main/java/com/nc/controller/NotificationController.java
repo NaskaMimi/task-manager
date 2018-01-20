@@ -1,37 +1,35 @@
 package com.nc.controller;
 
-import com.nc.Main;
+import com.nc.*;
+import com.nc.exception.TaskManagerWarning;
 import com.nc.model.Task;
 import javafx.animation.*;
-import javafx.collections.ObservableList;
+import javafx.collections.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Контроллер для макета notification.fxml
  */
-/**
- * На данный момент окошко нотификации простое:
- * все таски выводятся в лейбл, и при нажатии на кнопку Ок/Отложить
- * они все либо помечаются, как прочитанные, либо меняется их время
- * TODO Можно усложнить логику, заменив Label(titleLabel) в notification.fxml на TableView, чтобы при выборе определенной таски можно было работать именно с ней
- *
- */
+
 public class NotificationController
 {
 
     @FXML
-    private Label titleLabel;
+    private TableView<Task> taskTable;
+    @FXML
+    private TableColumn<Task, String> titleColumn;
+    @FXML
+    private TableColumn<Task, String> timeColumn;
 
     private Stage notificationDialogStage;
     private Main main;
+    private Task selectedTask;
 
     public void setMain(Main main)
     {
@@ -41,6 +39,13 @@ public class NotificationController
     @FXML
     private void initialize()
     {
+        // Инициализация таблицы с двумя столбцами
+        titleColumn.setCellValueFactory(cellData -> cellData.getValue().getTitleProperty());
+        timeColumn.setCellValueFactory(cellData -> cellData.getValue().getTimeProperty());
+
+        // Делаем таску выделенной по клику
+        taskTable.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> selectTask(newValue));
     }
 
     public void setDialogStage(Stage dialogStage)
@@ -56,13 +61,16 @@ public class NotificationController
         timeline.play();
     }
 
+    private void selectTask(Task task)
+    {
+        selectedTask = task;
+    }
+
     private void createNotificationWindowIfNeed()
     {
-        List<String> titleList = defineActualTasks().stream().map(Task::getTitle).collect(Collectors.toList());
-        if (titleList.size() > 0)
+        if (defineActualTasks().size() > 0)
         {
-            String contentText = String.join("\n", titleList);
-            titleLabel.setText(contentText);
+            taskTable.setItems(defineActualTasks());
             if (!notificationDialogStage.isShowing())
             {
                 notificationDialogStage.show();
@@ -70,10 +78,9 @@ public class NotificationController
         }
     }
 
-
-    private List<Task> defineActualTasks()
+    private ObservableList<Task> defineActualTasks()
     {
-        List<Task> taskList = new ArrayList<>();
+        ObservableList<Task> taskList = FXCollections.observableArrayList();
         ObservableList<Task> taskData = main.getTaskData();
         taskData.forEach(task -> {
             if (LocalDateTime.now().isBefore(task.toLocalDateTime()) // дедлайн задачи в будущем
@@ -90,15 +97,29 @@ public class NotificationController
     @FXML
     private void okButton()
     {
-        main.getTaskData().forEach(task -> task.setRead(true));
-        notificationDialogStage.close();
+        if (selectedTask != null)
+        {
+            selectedTask.setRead(true);
+            notificationDialogStage.close();
+        }
+        else
+        {
+            TaskManagerWarning.taskNotChosenWarning();
+        }
     }
 
     @FXML
     private void delayButton()
     {
-        main.getTaskData().forEach(task -> task.setTime(task.toLocalDateTime().plusMinutes(3).
-                format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
-        notificationDialogStage.close();
+        if (selectedTask != null)
+        {
+            selectedTask.setTime(selectedTask.toLocalDateTime().plusMinutes(3).
+                    format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            notificationDialogStage.close();
+        }
+        else
+        {
+            TaskManagerWarning.taskNotChosenWarning();
+        }
     }
 }

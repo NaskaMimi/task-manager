@@ -1,11 +1,10 @@
 package com.nc.controller;
 
+import com.nc.Constants;
 import com.nc.exception.TaskManagerWarning;
 import com.nc.model.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.time.format.DateTimeParseException;
@@ -13,7 +12,8 @@ import java.time.format.DateTimeParseException;
 /**
  * Контроллер для макета taskEditDialog.fxml
  */
-public class TaskEditDialogController {
+public class TaskEditDialogController
+{
     @FXML
     private TextField titleField;
     @FXML
@@ -27,24 +27,23 @@ public class TaskEditDialogController {
     private boolean okClicked = false;
 
     @FXML
-    private void initialize() {
+    private void initialize()
+    {
     }
 
     /**
      * Устанавливает сцену для этого окна
-     *
-     * @param dialogStage
      */
-    public void setDialogStage(Stage dialogStage) {
+    public void setDialogStage(Stage dialogStage)
+    {
         this.dialogStage = dialogStage;
     }
 
     /**
      * Инициализирует поля данными таска для их замены
-     *
-     * @param task
      */
-    public void setTask(Task task) {
+    public void setTask(Task task)
+    {
         this.task = task;
 
         titleField.setText(task.getTitle());
@@ -55,16 +54,17 @@ public class TaskEditDialogController {
 
     /**
      * Returns true, если пользователь кликнул OK, в другом случае false
-     *
-     * @return
      */
-    public boolean isOkClicked() {
+    public boolean isOkClicked()
+    {
         return okClicked;
     }
 
     @FXML
-    private void okButton() {
-        if (isInputValid()) {
+    private void okButton()
+    {
+        if (isInputValid())
+        {
             task.setTitle(titleField.getText());
             task.setTime(timeField.getText());
             task.setText(textArea.getText());
@@ -75,41 +75,48 @@ public class TaskEditDialogController {
     }
 
     @FXML
-    private void cancelButton() {
+    private void cancelButton()
+    {
         dialogStage.close();
     }
 
-    private boolean isInputValid() {
+    private boolean isInputValid()
+    {
         String errorMessage = "";
 
-        if (titleField.getText() == null || titleField.getText().length() == 0) {
-            errorMessage += "Некорректное название!\n";
+        if (titleField.getText() == null || titleField.getText().length() == 0)
+        {
+            errorMessage += Constants.INCORRECT_NAME;
         }
-        if (textArea.getText() == null || textArea.getText().length() == 0) {
-            errorMessage += "Некорректный текст!\n";
+        if (textArea.getText() == null || textArea.getText().length() == 0)
+        {
+            errorMessage += Constants.INCORRECT_DESCRIPTION;
         }
-        try {
-            if (timeField.getText() == null || timeField.getText().length() == 0) {
-                errorMessage += "Некорректное время!\n";
-            } else {
-                if (!task.validTime(timeField.getText())) {
-                }
+        try
+        {
+            if (timeField.getText() == null || timeField.getText().length() == 0)
+            {
+                errorMessage += Constants.INCORRECT_TIME;
             }
-        } catch (DateTimeParseException e) {
-            errorMessage += "Некорректное время. Используйте формат yyyy-MM-dd HH:mm!\n";
+            //TODO тут какая-то муть. Может, убрать?
+//            else {
+//                if (!task.validTime(timeField.getText())) {
+//                }
+//            }
+        }
+        catch (DateTimeParseException e)
+        {
+            errorMessage += Constants.INCORRECT_TIME_FORMAT;
         }
 
-        if (errorMessage.length() == 0) {
+        if (errorMessage.length() == 0)
+        {
             return true;
-        } else {
-            TaskManagerWarning.createWarning(
-                    "Неверно заданы поля!",
-                    "Пожалуйста, внесите изменения",
-                    errorMessage
-            );
-
+        }
+        else
+        {
+            TaskManagerWarning.invalidInputFieldsWarning(errorMessage);
             return false;
         }
-
     }
 }

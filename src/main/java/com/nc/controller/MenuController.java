@@ -1,6 +1,7 @@
 package com.nc.controller;
 
 import com.nc.Main;
+import com.nc.exception.TaskManagerWarning;
 import com.nc.model.Task;
 
 import javafx.fxml.FXML;
@@ -79,12 +80,11 @@ public class MenuController {
             taskTable.getItems().remove(selectedIndex);
             main.showNotification();
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.initOwner(main.getPrimaryStage());
-            alert.setTitle("Предупреждение");
-            alert.setHeaderText("Не выбрана задача!");
-            alert.setContentText("Пожалуйста, выберите задачу из списка");
-            alert.showAndWait();
+            TaskManagerWarning.createWarning(
+                    "Предупреждение",
+                    "Не выбрана задача!",
+                    "Пожалуйста, выберите задачу из списка"
+            );
         }
     }
 
@@ -98,13 +98,11 @@ public class MenuController {
                 main.showNotification();
             }
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.initOwner(main.getPrimaryStage());
-            alert.setTitle("Выбор пуст");
-            alert.setHeaderText("Не выбрана задача!");
-            alert.setContentText("Пожалуйста, выберете задачу в списке");
-
-            alert.showAndWait();
+            TaskManagerWarning.createWarning(
+                    "Выбор пуст",
+                    "Не выбрана задача!",
+                    "Пожалуйста, выберите задачу из списка"
+            );
         }
     }
 

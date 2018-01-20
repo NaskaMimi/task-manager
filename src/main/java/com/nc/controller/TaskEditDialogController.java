@@ -1,5 +1,6 @@
 package com.nc.controller;
 
+import com.nc.exception.TaskManagerWarning;
 import com.nc.model.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -101,13 +102,11 @@ public class TaskEditDialogController {
         if (errorMessage.length() == 0) {
             return true;
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.initOwner(dialogStage);
-            alert.setTitle("Неверно заданы поля!");
-            alert.setHeaderText("Пожалуйста, внесите изменения");
-            alert.setContentText(errorMessage);
-
-            alert.showAndWait();
+            TaskManagerWarning.createWarning(
+                    "Неверно заданы поля!",
+                    "Пожалуйста, внесите изменения",
+                    errorMessage
+            );
 
             return false;
         }

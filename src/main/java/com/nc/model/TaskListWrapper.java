@@ -9,16 +9,16 @@ import java.util.List;
  * Вспомогательный класс, используется для сохранения списка в xml файл.
  */
 @XmlRootElement(name = "tasks")
-@XmlSeeAlso({Task.class})
+//@XmlSeeAlso({Task.class})
 public class TaskListWrapper {
-    private List tasks;
+    private List <Task> tasks;
 
     @XmlElement(name = "task")
-    public List getTasks() {
+    public List<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List tasks) {
+    public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
 }

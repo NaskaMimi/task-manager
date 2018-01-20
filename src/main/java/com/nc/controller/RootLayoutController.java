@@ -17,6 +17,11 @@ public class RootLayoutController {
         this.main = main;
     }
 
+    public void onStop()
+    {
+        handleSaveAs();
+    }
+
     @FXML
     private void handleOpen() {
         FileChooser fileChooser = new FileChooser();

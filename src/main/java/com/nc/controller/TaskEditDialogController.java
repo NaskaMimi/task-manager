@@ -32,17 +32,17 @@ public class TaskEditDialogController
     }
 
     /**
-     * Устанавливает сцену для этого окна
+     * Устанавливает сцену для этого окна и инициализирует поля данными таска для их замены
      */
-    public void setDialogStage(Stage dialogStage)
+    public void setStage(Stage dialogStage)
     {
         this.dialogStage = dialogStage;
     }
 
     /**
-     * Инициализирует поля данными таска для их замены
+     * Устанавливает сцену для этого окна и инициализирует поля данными таска для их замены
      */
-    public void setTask(Task task)
+    public void setParameters(Task task)
     {
         this.task = task;
 

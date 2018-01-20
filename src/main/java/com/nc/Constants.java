@@ -2,12 +2,12 @@ package com.nc;
 
 public class Constants
 {
-    static final String TASK_MANAGER = "Менеджер задач";
 
     static final String NOTIFICATION = "Уведомление";
 
     static final String TASK_EDITION = "Редактирование задачи";
 
+    public static final String TASK_MANAGER = "Менеджер задач";
     public static final String INCORRECT_NAME = "Некорректное название!\n";
     public static final String INCORRECT_DESCRIPTION = "Некорректное описание!\n";
     public static final String INCORRECT_TIME = "Некорректное время!\n";

@@ -31,9 +31,10 @@ public class NotificationController
     private Main main;
     private Task selectedTask;
 
-    public void setMain(Main main)
+    public void setParameters(Main main, Stage dialogStage)
     {
         this.main = main;
+        this.notificationDialogStage = dialogStage;
     }
 
     @FXML
@@ -46,11 +47,6 @@ public class NotificationController
         // Делаем таску выделенной по клику
         taskTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> selectTask(newValue));
-    }
-
-    public void setDialogStage(Stage dialogStage)
-    {
-        this.notificationDialogStage = dialogStage;
     }
 
     public void createTimerForNotifications()

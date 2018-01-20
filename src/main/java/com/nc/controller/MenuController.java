@@ -17,7 +17,6 @@ public class MenuController
     private TableColumn<Task, String> titleColumn;
     @FXML
     private TableColumn<Task, String> timeColumn;
-
     @FXML
     private Label titleLabel;
     @FXML
@@ -26,10 +25,6 @@ public class MenuController
     private Label textLabel;
 
     private Main main;
-
-    public MenuController()
-    {
-    }
 
     /**
      * Инициализация класса-контроллера.
@@ -46,33 +41,6 @@ public class MenuController
         // Обновление таблицы при изменении
         taskTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showTaskDetails(newValue));
-    }
-
-    public void setMain(Main main)
-    {
-        this.main = main;
-
-        // Добавление в таблицу данных из списка
-        taskTable.setItems(main.getTaskData());
-    }
-
-    /**
-     * Инициализация полей выделенным таском
-     */
-    private void showTaskDetails(Task task)
-    {
-        if (task != null)
-        {
-            titleLabel.setText(task.getTitle());
-            timeLabel.setText(task.getTime());
-            textLabel.setText(task.getText());
-        }
-        else
-        {
-            titleLabel.setText("");
-            timeLabel.setText("");
-            textLabel.setText("");
-        }
     }
 
     @FXML
@@ -95,8 +63,7 @@ public class MenuController
         Task selectedTask = taskTable.getSelectionModel().getSelectedItem();
         if (selectedTask != null)
         {
-            boolean okClicked = main.showTaskEditDialog(selectedTask);
-            if (okClicked)
+            if (main.isTaskEditionDialogShowing(selectedTask))
             {
                 showTaskDetails(selectedTask);
             }
@@ -111,10 +78,35 @@ public class MenuController
     private void newButton()
     {
         Task temp = new Task();
-        boolean okClicked = main.showTaskEditDialog(temp);
-        if (okClicked)
+        if (main.isTaskEditionDialogShowing(temp))
         {
             main.getTaskData().add(temp);
+        }
+    }
+
+    public void setMain(Main main)
+    {
+        this.main = main;
+        // Добавление в таблицу данных из списка
+        taskTable.setItems(main.getTaskData());
+    }
+
+    /**
+     * Инициализация полей выделенным таском
+     */
+    private void showTaskDetails(Task task)
+    {
+        if (task != null)
+        {
+            titleLabel.setText(task.getTitle());
+            timeLabel.setText(task.getTime());
+            textLabel.setText(task.getText());
+        }
+        else
+        {
+            titleLabel.setText("");
+            timeLabel.setText("");
+            textLabel.setText("");
         }
     }
 }

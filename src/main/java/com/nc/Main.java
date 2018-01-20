@@ -1,8 +1,8 @@
 package com.nc;
 
 import com.nc.controller.*;
-import com.nc.exception.TaskManagerException;
-import com.nc.model.*;
+import com.nc.model.Task;
+import com.nc.utils.Utils;
 import javafx.application.Application;
 import javafx.collections.*;
 import javafx.fxml.FXMLLoader;
@@ -10,26 +10,13 @@ import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 
-import javax.xml.bind.*;
-import java.io.*;
-import java.util.prefs.Preferences;
-
 public class Main extends Application
 {
-
     private Stage primaryStage;
     private BorderPane rootLayout;
+    private Stage taskEditDialogStage;
+    private TaskEditDialogController taskEditDialogController;
     private ObservableList<Task> taskData = FXCollections.observableArrayList();
-    private RootLayoutController controller;
-
-    public Main()
-    {
-    }
-
-    public ObservableList<Task> getTaskData()
-    {
-        return taskData;
-    }
 
     @Override
     public void start(Stage primaryStage)
@@ -39,90 +26,25 @@ public class Main extends Application
 
         initRootLayout();
 
-        showMenu();
+        createMenu();
+        createNotificationWindow();
+        createTaskEditingWindow();
+    }
 
-        showNotification();
+    @Override
+    public void stop()
+    {
+        Utils.exitAndSaveChanges(this);
     }
 
     /**
-     * Основная область
+     * Всплывающее окно редактирования
      */
-    private void initRootLayout()
+    public boolean isTaskEditionDialogShowing(Task task)
     {
-        try
-        {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/view/RootLayout.fxml"));
-            rootLayout = loader.load();
-
-            Scene scene = new Scene(rootLayout);
-            primaryStage.setScene(scene);
-
-            controller = loader.getController();
-            controller.setMain(this);
-
-            primaryStage.show();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        // Загрузка последнего открытого файла из реестра
-        File file = getTaskFilePath();
-        if (file != null)
-        {
-            loadTaskDataFromFile(file);
-        }
-    }
-
-    private void showMenu()
-    {
-        try
-        {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/view/menu.fxml"));
-            AnchorPane taskOverview = loader.load();
-
-            rootLayout.setCenter(taskOverview);
-
-            MenuController controller = loader.getController();
-            controller.setMain(this);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Всплывающее окно уведомления
-     */
-    private void showNotification()
-    {
-        try
-        {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/view/notification.fxml"));
-            Pane page = loader.load();
-
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle(Constants.NOTIFICATION);
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
-            Scene scene = new Scene(page);
-            dialogStage.setScene(scene);
-
-            NotificationController controller = loader.getController();
-            controller.setMain(this);
-            controller.setDialogStage(dialogStage);
-            controller.createTimerForNotifications();
-
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        taskEditDialogController.setParameters(task);
+        taskEditDialogStage.showAndWait();
+        return taskEditDialogController.isOkClicked();
     }
 
     public Stage getPrimaryStage()
@@ -130,118 +52,78 @@ public class Main extends Application
         return primaryStage;
     }
 
-    /**
-     * Всплывающее окно редактирования
-     */
-    public boolean showTaskEditDialog(Task task)
+    public ObservableList<Task> getTaskData()
     {
-        try
-        {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/view/taskEditDialog.fxml"));
-            AnchorPane page = loader.load();
-
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle(Constants.TASK_EDITION);
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
-            Scene scene = new Scene(page);
-            dialogStage.setScene(scene);
-
-            TaskEditDialogController controller = loader.getController();
-            controller.setDialogStage(dialogStage);
-            controller.setTask(task);
-            dialogStage.showAndWait();
-
-            return controller.isOkClicked();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            return false;
-        }
+        return taskData;
     }
 
     /**
-     * Выгружает в память путь последнего загруженного файла
-     * Путь хранится в реестре
+     * Основная область
      */
-    public File getTaskFilePath()
+    private void initRootLayout()
     {
-        Preferences prefs = Preferences.userNodeForPackage(getClass());
-        String filePath = prefs.get("filePath", null);
-        if (filePath != null)
+        FXMLLoader loader = new FXMLLoader();
+        //TODO Строгий каст - нехорошо, но пока не знаю, как по-другому это сделать
+        rootLayout = (BorderPane)Utils.createPaneFromFXML(loader, "/view/RootLayout.fxml");
+
+        if (rootLayout != null)
         {
-            return new File(filePath);
+            RootLayoutController controller = loader.getController();
+            controller.setMain(this);
+
+            primaryStage.setScene(new Scene(rootLayout));
+            primaryStage.show();
+
+            // Загрузка последнего открытого файла из реестра
+            Utils.loadLastOpenedFileFromRegistry(taskData, primaryStage);
         }
-        else
-        {
-            return null;
-        }
+    }
+
+    private void createMenu()
+    {
+        FXMLLoader loader = new FXMLLoader();
+        Pane taskOverview = Utils.createPaneFromFXML(loader, "/view/menu.fxml");
+
+        rootLayout.setCenter(taskOverview);
+
+        MenuController controller = loader.getController();
+        controller.setMain(this);
     }
 
     /**
-     * Задаёт путь текущему загруженному файлу
-     * Путь сохраняется в реестре
+     * Всплывающее окно уведомления
      */
-    private void setTaskFilePath(File file)
+    private void createNotificationWindow()
     {
-        Preferences prefs = Preferences.userNodeForPackage(getClass());
-        prefs.put("filePath", file.getPath());
+        FXMLLoader loader = new FXMLLoader();
+        Pane pane = Utils.createPaneFromFXML(loader, "/view/notification.fxml");
+        Stage dialogStage = createModalWindow(Constants.NOTIFICATION, pane);
 
-        primaryStage.setTitle(Constants.TASK_MANAGER+ " - " + file.getName());
+        NotificationController controller = loader.getController();
+        controller.setParameters(this, dialogStage);
+        controller.createTimerForNotifications();
     }
 
-    public void loadTaskDataFromFile(File file)
+    private void createTaskEditingWindow()
     {
-        try
-        {
-            JAXBContext context = JAXBContext.newInstance(TaskListWrapper.class);
-            Unmarshaller um = context.createUnmarshaller();
+        FXMLLoader loader = new FXMLLoader();
+        Pane pane = Utils.createPaneFromFXML(loader, "/view/taskEditDialog.fxml");
+        Stage dialogStage = createModalWindow(Constants.TASK_EDITION, pane);
 
-            TaskListWrapper wrapper = (TaskListWrapper)um.unmarshal(file);
+        TaskEditDialogController controller = loader.getController();
+        controller.setStage(dialogStage);
 
-            taskData.clear();
-            taskData.addAll(wrapper.getTasks());
-
-            setTaskFilePath(file);
-        }
-        catch (Exception e)
-        {
-            TaskManagerException.createLoadingException(file.getPath(), e);
-        }
+        taskEditDialogStage = dialogStage;
+        taskEditDialogController = controller;
     }
 
-    public void saveTaskDataToFile(File file)
+    private Stage createModalWindow(String title, Pane pane)
     {
-        try
-        {
-            JAXBContext context = JAXBContext.newInstance(TaskListWrapper.class);
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-            TaskListWrapper wrapper = new TaskListWrapper();
-            wrapper.setTasks(taskData);
-
-            m.marshal(wrapper, file);
-
-            setTaskFilePath(file);
-        }
-        catch (Exception e)
-        {
-            TaskManagerException.createSavingException(file.getPath(), e);
-        }
-    }
-
-    public void stop()
-    {
-        File taskFile = getTaskFilePath();
-        if (taskFile != null) {
-            saveTaskDataToFile(taskFile);
-        } else {
-            controller.onStop();
-        }
-
-        System.exit(0);
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle(title);
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.initOwner(primaryStage);
+        dialogStage.setScene(new Scene(pane));
+        return dialogStage;
     }
 }

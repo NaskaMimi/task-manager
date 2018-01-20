@@ -98,7 +98,7 @@ public class Main extends Application
     /**
      * Всплывающее окно уведомления
      */
-    public void showNotification()
+    private void showNotification()
     {
         try
         {

@@ -98,11 +98,13 @@ public class TaskEditDialogController
             {
                 errorMessage += Constants.INCORRECT_TIME;
             }
-            //TODO тут какая-то муть. Может, убрать?
-//            else {
-//                if (!task.validTime(timeField.getText())) {
-//                }
-//            }
+            else
+            {
+                if (!Task.validTime(timeField.getText()))
+                {
+                    errorMessage += Constants.INCORRECT_TIME_FORMAT;
+                }
+            }
         }
         catch (DateTimeParseException e)
         {

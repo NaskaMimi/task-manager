@@ -50,6 +50,7 @@ public class TaskEditDialogController implements Controller
      */
     public void setParameters(Task task)
     {
+        okClicked = false;
         this.task = task;
 
         titleField.setText(task.getTitle());

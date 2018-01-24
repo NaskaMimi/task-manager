@@ -1,17 +1,21 @@
 package com.nc.model;
 
+import com.nc.Main;
 import javafx.beans.property.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Task
+public class Task implements Serializable
 {
 
-    private final StringProperty title;
-    private final StringProperty time;
-    private final StringProperty text;
+    private String title;
+    private String time;
+    private String text;
     private Boolean read = false;
+    private String login = Main.USER_NAME;
+    private int id = 0;
 
     public Task()
     {
@@ -20,65 +24,83 @@ public class Task
 
     public Task(String title, String text, String timeString)
     {
-        this.title = new SimpleStringProperty(title);
-        this.time = new SimpleStringProperty(timeString);
-        this.text = new SimpleStringProperty(text);
+        this.title = title;
+        this.time = timeString;
+        this.text = text;
     }
 
     public void setTitle(String title)
     {
-        this.title.set(title);
+        this.title = title;
     }
 
     public void setTime(String timeString)
     {
-        this.time.set(timeString);
+        this.time = timeString;
     }
 
     public void setText(String text)
     {
-        this.text.set(text);
+        this.text = text;
     }
 
     public StringProperty getTitleProperty()
     {
-        return title;
+        return new SimpleStringProperty(title);
     }
 
     public StringProperty getTextProperty()
     {
-        return text;
+        return new SimpleStringProperty(text);
     }
 
     public StringProperty getTimeProperty()
     {
-        return time;
+        return new SimpleStringProperty(time);
     }
 
     public String getTime()
     {
-        return time.get();
+        return time;
     }
 
     public LocalDateTime toLocalDateTime()
     {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return LocalDateTime.parse(time.get(), formatter);
+        return LocalDateTime.parse(time, formatter);
     }
 
     public String getText()
     {
-        return text.get();
+        return text;
     }
 
     public String getTitle()
     {
-        return title.get();
+        return title;
     }
 
     public Boolean getRead()
     {
         return read;
+    }
+
+    public void setLogin(String login)
+    {
+        this.login = login;
+    }
+
+    public String getLogin()
+    {
+        return login;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void setRead(Boolean read)

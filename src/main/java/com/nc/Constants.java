@@ -7,6 +7,8 @@ public class Constants
 
     static final String TASK_EDITION = "Редактирование задачи";
 
+    static final String LOGIN = "Авторизация";
+
     public static final String TASK_MANAGER = "Менеджер задач";
     public static final String INCORRECT_NAME = "Некорректное название!\n";
     public static final String INCORRECT_DESCRIPTION = "Некорректное описание!\n";
@@ -22,6 +24,7 @@ public class Constants
     public static final String ERROR = "Ошибка";
     public static final String FAILED_TO_SAVE_DATA = "Не удалось сохранить данные";
     public static final String FAILED_TO_LOAD_DATA = "Не удалось загрузить данные";
+    public static final String FAILED_AUTHORIZATION = "Не удалось авторизоваться";
     public static final String TO = "в  \n";
     public static final String FROM = "из  \n";
 

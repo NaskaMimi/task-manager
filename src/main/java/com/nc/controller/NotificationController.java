@@ -3,6 +3,8 @@ package com.nc.controller;
 import com.nc.*;
 import com.nc.exception.TaskManagerWarning;
 import com.nc.model.Task;
+import com.nc.socket.TaskManagerSocket;
+import com.nc.utils.Utils;
 import javafx.animation.*;
 import javafx.collections.*;
 import javafx.fxml.FXML;
@@ -61,6 +63,7 @@ public class NotificationController implements Controller
         if (selectedTask != null)
         {
             selectedTask.setRead(true);
+            Utils.initResponseTaskData(TaskManagerSocket.sendDataToServer("edit",  selectedTask), main);
             notificationDialogStage.close();
         }
         else
@@ -74,8 +77,9 @@ public class NotificationController implements Controller
     {
         if (selectedTask != null)
         {
-            selectedTask.setTime(selectedTask.toLocalDateTime().plusMinutes(3).
+            selectedTask.setTime(selectedTask.toLocalDateTime().plusMinutes(1).
                     format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            Utils.initResponseTaskData(TaskManagerSocket.sendDataToServer("edit",  selectedTask), main);
             notificationDialogStage.close();
         }
         else

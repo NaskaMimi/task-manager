@@ -30,25 +30,19 @@ public class RootLayoutController implements Controller
 
     public void onStop()
     {
-        Utils.saveAs(main);
+        Utils.saveFile();
     }
 
     @FXML
-    private void handleOpen()
+    private void handleSave()
     {
-        Utils.openFile(main);
-    }
-
-    @FXML
-    private void handleSaveAs()
-    {
-        Utils.saveAs(main);
+        Utils.saveFile();
     }
 
     @FXML
     private void handleExit()
     {
-        Utils.exitAndSaveChanges(main);
+        Utils.exitAndSaveChanges();
     }
 }
 

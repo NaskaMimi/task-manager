@@ -23,6 +23,15 @@ public class TaskManagerWarning
         );
     }
 
+    public static void createLoginWarning()
+    {
+        createWarning(
+                Constants.ERROR,
+                Constants.INVALID_INPUT_FIELDS,
+                Constants.FAILED_AUTHORIZATION
+        );
+    }
+
     private static void createWarning(String title, String headerText, String contentText)
     {
         Alert alert = new Alert(Alert.AlertType.WARNING);

@@ -3,9 +3,15 @@ package com.nc.controller;
 import com.nc.Main;
 import com.nc.exception.TaskManagerWarning;
 import com.nc.model.Task;
+import com.nc.socket.TaskManagerSocket;
+import com.nc.utils.Utils;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+
+import java.util.List;
 
 /**
  * Контроллер для макета menu.fxml
@@ -62,10 +68,10 @@ public class MenuController implements Controller
     @FXML
     private void deleteButton()
     {
-        int selectedIndex = taskTable.getSelectionModel().getSelectedIndex();
-        if (selectedIndex >= 0)
+        Task selectedTask = taskTable.getSelectionModel().getSelectedItem();
+        if (selectedTask != null)
         {
-            taskTable.getItems().remove(selectedIndex);
+            Utils.initResponseTaskData(TaskManagerSocket.sendDataToServer("delete",  selectedTask), main);
         }
         else
         {
@@ -81,7 +87,7 @@ public class MenuController implements Controller
         {
             if (main.isTaskEditionDialogShowing(selectedTask))
             {
-                showTaskDetails(selectedTask);
+                Utils.initResponseTaskData(TaskManagerSocket.sendDataToServer("edit",  selectedTask), main);
             }
         }
         else
@@ -96,7 +102,7 @@ public class MenuController implements Controller
         Task temp = new Task();
         if (main.isTaskEditionDialogShowing(temp))
         {
-            main.getTaskData().add(temp);
+            Utils.initResponseTaskData(TaskManagerSocket.sendDataToServer("create", temp), main);
         }
     }
 

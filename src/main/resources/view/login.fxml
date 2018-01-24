@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="130.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.nc.controller.LoginWindowController">
+   <children>
+      <TextField fx:id="loginField" layoutX="77.0" layoutY="48.0" />
+      <Label layoutX="114.0" layoutY="14.0" text="Авторизация" />
+      <Button layoutX="116.0" layoutY="91.0" mnemonicParsing="false" onAction="#okButton" prefHeight="25.0" prefWidth="72.0" text="ОК" />
+   </children>
+</AnchorPane>
